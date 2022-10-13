@@ -1,6 +1,10 @@
 import pygame
-
 pygame.init()
+
+from scene_manager import SceneManager
+from titleScene import TitleScene
+
+
 
 screen = pygame.display.set_mode((525, 900))
 pygame.display.set_caption("Space Invader")
@@ -9,26 +13,17 @@ player_hitbox = pygame.Rect(175, 340, 40, 40)
 player_image = pygame.Surface((40, 40))
 player_image.fill((0, 0, 255))
 
+scene_manager = SceneManager(initial_scene=TitleScene())
+
 while True:
     # event handling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                player_hitbox.center = screen.get_width() / 2, screen.get_height() / 2
-            if event.key == pygame.K_UP:
-                player_hitbox.y -= 50
-
+    if pygame.event.get(eventtype=pygame.QUIT):
+        pygame.quit()
 
     # game logic
-    #player_hitbox.x += 2
-    keymap = pygame.key.get_pressed()
-    if keymap[pygame.K_DOWN]:
-        player_hitbox.y += 50
+    scene_manager.current_scene.handle_events(pygame.event.get())
+    scene_manager.current_scene.update()
+    scene_manager.current_scene.render(screen)
 
-    # drawing game
-    screen.fill((255, 255, 255))
-    screen.blit(player_image, player_hitbox)
     pygame.display.flip()
     clock.tick(60)
