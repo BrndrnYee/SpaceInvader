@@ -1,12 +1,12 @@
 import pygame
 from player import Player
 from bullet import Bullet
-from enemy import Enemy
+from enemy import Formation
 
 class GameScene:
     def __init__(self):
         self.player = Player(525/2-25, 750)
-        self.enemy = Enemy()
+        self.formation = Formation(50, 50, 5)
         self.bullets = []
     
     def handle_events(self, events: list[pygame.event.Event]):
@@ -26,9 +26,9 @@ class GameScene:
             bullet.update()
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
-            if self.enemy.rect.colliderect(bullet.rect):
+            if self.formation.hitBy(bullet):
                 self.bullets.remove(bullet)
-                # todo: damage enemy
+
 
 
     def render(self, screen: pygame.Surface):
@@ -36,4 +36,4 @@ class GameScene:
         self.player.draw(screen)
         for bullet in self.bullets:
             bullet.draw(screen)
-        self.enemy.draw(screen)
+        self.formation.draw(screen)
