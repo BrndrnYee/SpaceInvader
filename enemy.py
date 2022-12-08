@@ -1,11 +1,13 @@
 import pygame
 
-
+enemy_image = pygame.image.load("images/enemy.png")
 class Enemy:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 50, 50)
-        self.image = pygame.Surface(self.rect.size)
-        self.image.fill(pygame.Color((255, 125, 64)))
+        # self.image = pygame.Surface(self.rect.size)
+        # self.image.fill(pygame.Color((255, 125, 64)))
+        self.image = pygame.transform.scale(enemy_image, (self.rect.w, self.rect.h))
+        self.health = 1
 
     def update(self):
         pass
@@ -33,7 +35,9 @@ class Formation:
         if bullet.rect.colliderect(self.rect):
             for enemy in self.enemies:
                 if bullet.rect.colliderect(enemy.rect):
-                    # todo deal damage
+                    enemy.health -= 1
+                    if enemy.health <= 0:
+                        self.enemies.remove(enemy)
                     return True
         return False
 

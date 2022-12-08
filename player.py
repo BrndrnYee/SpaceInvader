@@ -3,7 +3,8 @@ import pygame
 class Player:
     def __init__(self, x, y):
         self.rect = pygame.Rect((x, y), (50, 50))
-        self.image = pygame.Surface(self.rect.size)
+        self.image = pygame.image.load("images/player_ship.webp")
+        self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
         self.x_vel = 0
 
     def draw(self, screen):

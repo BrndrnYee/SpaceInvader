@@ -6,7 +6,10 @@ from enemy import Formation
 class GameScene:
     def __init__(self):
         self.player = Player(525/2-25, 750)
-        self.formation = Formation(50, 50, 5)
+        self.formations = [
+            Formation(50, 50, 5),
+            Formation(100, 300, 20)
+        ]
         self.bullets = []
     
     def handle_events(self, events: list[pygame.event.Event]):
@@ -26,8 +29,11 @@ class GameScene:
             bullet.update()
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
-            if self.formation.hitBy(bullet):
-                self.bullets.remove(bullet)
+            for formation in self.formations:
+                if formation.hitBy(bullet):
+                    self.bullets.remove(bullet)
+                    if len(formation.enemies) == 0:
+                        self.formations.remove(formation)
 
 
 
@@ -36,4 +42,5 @@ class GameScene:
         self.player.draw(screen)
         for bullet in self.bullets:
             bullet.draw(screen)
-        self.formation.draw(screen)
+        for formation in self.formations:
+            formation.draw(screen)
