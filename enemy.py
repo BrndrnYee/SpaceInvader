@@ -1,4 +1,7 @@
 import pygame
+import time
+import random
+from bullet import Bullet
 
 enemy_image = pygame.image.load("images/enemy.png")
 class Enemy:
@@ -8,9 +11,14 @@ class Enemy:
         # self.image.fill(pygame.Color((255, 125, 64)))
         self.image = pygame.transform.scale(enemy_image, (self.rect.w, self.rect.h))
         self.health = 1
+        self.reload_time_range = [1, 5]
+        self.next_fire_time = time.time() + random.randint(*self.reload_time_range)
+        self.bullet = None
 
     def update(self):
-        pass
+        if time.time() > self.next_fire_time:
+            self.bullet = Bullet(self.rect.centerx, self.rect.centery, True)
+            self.next_fire_time = time.time() + random.randint(*self.reload_time_range)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -30,9 +38,10 @@ class Formation:
             self.y,
             self.enemies[0].rect.width * len(self.enemies) + self.gap * (len(self.enemies) - 1),
             self.enemies[0].rect.height)
+        self.moving_right = True
 
     def hitBy(self, bullet):
-        if bullet.rect.colliderect(self.rect):
+        if bullet.going_down == False and bullet.rect.colliderect(self.rect):
             for enemy in self.enemies:
                 if bullet.rect.colliderect(enemy.rect):
                     enemy.health -= 1
@@ -42,7 +51,28 @@ class Formation:
         return False
 
     def update(self):
-        pass
+        if self.moving_right:
+            self.rect.x += 1
+            for enemy in self.enemies:
+                enemy.rect.x += 1
+        else:
+            self.rect.x -= 1
+            for enemy in self.enemies:
+                enemy.rect.x -= 1
+        if self.rect.right > 500:
+            self.moving_right = False
+            self.rect.right = 500
+            self.rect.y += 10
+            for enemy in self.enemies:
+                enemy.rect.y += 10
+        if self.rect.left < 25:
+            self.moving_right = True
+            self.rect.left = 25
+            self.rect.y += 10
+            for enemy in self.enemies:
+                enemy.rect.y += 10
+        for enemy in self.enemies:
+            enemy.update()
 
     def draw(self, screen):
         for enemy in self.enemies:
